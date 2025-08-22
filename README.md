@@ -106,7 +106,8 @@ force-app/
 ## Screenshots
 
 **Step 1: Search & Select Products**  
-![Step1](./screenshots/step1.png)
+<img width="1353" height="503" alt="QG1" src="https://github.com/user-attachments/assets/5a4f5693-46ef-4f8a-8157-d2071d09430d" />
+
 
 **Step 2: Add Quantities**  
 ![Step2](./screenshots/step2.png)
