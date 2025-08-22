@@ -85,12 +85,21 @@ sfdx force:source:deploy -p force-app/main/default/lwc/quoteGenerator
 force-app/
 └── main/
     └── default/
+        └── classes/
+                ├── QuoteController.cls
+                └── QuoteController.cls-meta.xml 
         └── lwc/
             └── quoteGenerator/
                 ├── quoteGenerator.html
                 ├── quoteGenerator.js
-                ├── quoteGenerator.css
-                └── README.md
+                └── quoteGenerator.css
+        └── staticresources/
+                ├── JSPDF.js
+                ├── JSPDF.resource-meta.xml
+                ├── JSPDF_AUTOTABLE.js
+                └── JSPDF_AUTOTABLE.resource-meta.xml
+README.md
+            
 ```
 
 ---
