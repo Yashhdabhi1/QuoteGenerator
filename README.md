@@ -98,7 +98,6 @@ force-app/
                 ├── JSPDF.resource-meta.xml
                 ├── JSPDF_AUTOTABLE.js
                 └── JSPDF_AUTOTABLE.resource-meta.xml
-README.md
             
 ```
 
