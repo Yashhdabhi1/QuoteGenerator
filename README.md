@@ -110,10 +110,12 @@ force-app/
 
 
 **Step 2: Add Quantities**  
-![Step2](./screenshots/step2.png)
+<img width="1350" height="536" alt="QG2" src="https://github.com/user-attachments/assets/27c4f031-48e5-4068-8dbd-63800510db04" />
+
 
 **Step 3: Quote Summary**  
-![Step3](./screenshots/step3.png)
+<img width="1349" height="390" alt="QG3" src="https://github.com/user-attachments/assets/3b0aebae-541f-4585-b436-f2452b6e70f0" />
+
 
 ---
 
