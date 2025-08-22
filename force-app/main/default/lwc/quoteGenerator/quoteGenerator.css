@@ -1,0 +1,138 @@
+/* Card container */
+.container {
+    width: 70%;
+    margin-left: 284px;
+    background: var(--slds-g-color-neutral-base-100, #fff);
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, .08);
+}
+
+/* Progress Indicator spacing */
+lightning-progress-indicator {
+    margin-bottom: 1.25rem;
+}
+
+/* Search row */
+.search-row lightning-input[type="search"] {
+    --slds-c-input-radius-border: 0.5rem;
+    --slds-c-input-color-border: var(--slds-g-color-border-base-1, #d8dde6);
+    --slds-c-input-color-border-focus: var(--slds-g-color-brand-base-50, #0176d3);
+}
+
+.empty-state{
+    align-items: baseline;
+    justify-content: center;
+}
+
+/* Empty state presentation */
+.empty-state .kbd {
+    background: var(--slds-g-color-neutral-base-95, #f3f3f3);
+    border: 1px solid var(--slds-g-color-border-base-1, #d8dde6);
+    border-radius: 0.25rem;
+    padding: 0 .375rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+}
+
+/* Product results grid */
+.product-list {
+    margin-top: 10px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1rem;
+}
+
+/* Product card (tile) */
+.product-card {
+    cursor: pointer;
+    border-radius: 0.5rem;
+    border: 1px solid var(--slds-g-color-border-base-1, #d8dde6);
+    background: var(--slds-g-color-neutral-base-100, #fff);
+    transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease, background .12s ease;
+    outline: none;
+}
+
+.product-card:hover,
+.product-card:focus {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, .08);
+    border-color: var(--slds-g-color-brand-base-50, #0176d3);
+    background: var(--slds-g-color-neutral-base-98, #f7f9fb);
+}
+
+.product-card:active {
+    transform: translateY(0);
+}
+
+.product-card.selected {
+    border-color: #77828c !important;
+}
+
+/* Price text */
+.price {
+    font-weight: 600;
+    color: var(--slds-g-color-text-success, #2e844a);
+}
+
+/* Selected count pill */
+.count-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.5rem;
+    height: 1.5rem;
+    padding: 0 .375rem;
+    font-size: .75rem;
+    font-weight: 700;
+    color: var(--slds-g-color-neutral-base-100, #fff);
+    background: var(--slds-g-color-brand-base-50, #0176d3);
+    border-radius: 999px;
+}
+
+/* Quantity cards */
+.qty-card {
+    border-radius: 0.5rem;
+    border: 1px solid var(--slds-g-color-border-base-1, #d8dde6);
+    background: var(--slds-g-color-neutral-base-100, #fff);
+}
+
+/* Scroll container for table on small screens */
+.table-scroll {
+    overflow: auto;
+    border-radius: 0.5rem;
+}
+
+/* Table polish */
+.slds-table {
+    border-radius: 0.5rem;
+}
+
+.slds-table th {
+    background: var(--slds-g-color-neutral-base-95, #f3f3f3);
+    font-weight: 600;
+}
+
+.slds-table td,
+.slds-table th {
+    padding: 0.75rem;
+}
+
+/* Totals row */
+.quote-total {
+    display: flex;
+    align-items: baseline;
+    gap: .5rem;
+}
+
+.quote-total .amount {
+    font-weight: 800;
+    font-size: 1.2rem;
+    color: var(--slds-g-color-brand-base-50, #0176d3);
+}
+
+/* Footer action area */
+.footer-actions .cta-next {
+    min-width: 160px;
+}

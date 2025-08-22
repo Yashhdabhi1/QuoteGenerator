@@ -1,0 +1,129 @@
+# Quote Generator Lightning Web Component (LWC)
+
+A dynamic **Salesforce Lightning Web Component** for generating quotes with product selection, quantity input, and PDF export functionality. This component provides a seamless multi-step wizard interface for sales teams to search products, set quantities, review totals, and save quotes.
+
+---
+
+## Features
+
+1. **Multi-Step Wizard**  
+   - Step 1: Search & filter products  
+   - Step 2: Add quantities to selected products  
+   - Step 3: Review quote summary and total amount  
+
+2. **Dynamic Product Selection**  
+   - Click to select/unselect products  
+   - Border highlights in red when selected  
+
+3. **Quantity Management**  
+   - Enter product quantities  
+   - Dynamic calculation of total prices  
+
+4. **Quote Summary**  
+   - Displays selected products with quantities, unit prices, and total prices  
+   - Total quote amount automatically calculated  
+
+5. **Save Quote & PDF Generation**  
+   - Saves quote via Apex controller  
+   - Optionally generates a PDF of the quote  
+
+6. **Responsive UI**  
+   - Uses Salesforce Lightning Design System (SLDS)  
+   - Mobile-friendly and accessible  
+
+---
+
+## Installation
+
+1. Clone this repository:
+
+```bash
+git clone https://github.com/<your-username>/quote-generator-lwc.git
+cd quote-generator-lwc
+```
+
+2. Deploy the component to your Salesforce org using **SFDX**:
+
+```bash
+sfdx force:source:deploy -p force-app/main/default/lwc/quoteGenerator
+```
+
+3. Add the component to a Lightning App Builder page or a Record Page.
+
+---
+
+## Usage
+
+1. **Step 1: Search & Filter Products**  
+   - Type a keyword and press **Enter** to filter products.  
+   - Click a product to select it (border turns red). Click again to unselect.  
+
+2. **Step 2: Add Quantity**  
+   - Input quantities for the selected products.  
+
+3. **Step 3: Quote Summary**  
+   - Review all selected products and totals.  
+   - Click **Save Quote & Generate PDF** to save in Salesforce and optionally download a PDF.  
+
+---
+
+## Dependencies
+
+- Salesforce Lightning Web Components  
+- Apex Controller (`QuoteController`) with methods:
+  - `getProducts()` – retrieves product data  
+  - `createQuote(lineItems)` – saves the quote  
+
+- [SLDS](https://www.lightningdesignsystem.com/) for styling  
+- Optional: jsPDF for client-side PDF generation  
+
+---
+
+## File Structure
+
+```
+force-app/
+└── main/
+    └── default/
+        └── lwc/
+            └── quoteGenerator/
+                ├── quoteGenerator.html
+                ├── quoteGenerator.js
+                ├── quoteGenerator.css
+                └── README.md
+```
+
+---
+
+## Screenshots
+
+**Step 1: Search & Select Products**  
+![Step1](./screenshots/step1.png)
+
+**Step 2: Add Quantities**  
+![Step2](./screenshots/step2.png)
+
+**Step 3: Quote Summary**  
+![Step3](./screenshots/step3.png)
+
+---
+
+## Contributing
+
+Contributions are welcome! Feel free to open issues or submit pull requests.  
+
+---
+
+## License
+
+This project is licensed under the **MIT License** – see the [LICENSE](LICENSE) file for details.  
+
+---
+
+### Optional Enhancements
+
+- Smooth border transition animation when selecting/unselecting products  
+- Integration with Salesforce CPQ for advanced pricing  
+- Support for multiple currencies  
+- Enhanced PDF formatting and styling
+

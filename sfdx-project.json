@@ -1,0 +1,19 @@
+{
+  "packageDirectories": [
+    {
+      "versionName": "ver 0.1",
+      "versionNumber": "0.1.0.NEXT",
+      "path": "force-app",
+      "default": true,
+      "package": "GoogleDriveIntegration",
+      "versionDescription": "Google Drive Integration for Account Object record"
+    }
+  ],
+  "name": "new",
+  "namespace": "",
+  "sfdcLoginUrl": "https://login.salesforce.com",
+  "sourceApiVersion": "63.0",
+  "packageAliases": {
+    "GoogleDriveIntegration": "0HodL0000001DknSAE"
+  }
+}

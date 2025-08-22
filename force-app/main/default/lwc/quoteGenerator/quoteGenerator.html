@@ -1,0 +1,128 @@
+<template>
+    <div class="container">
+        <div class="slds-p-around_medium">
+            <lightning-progress-indicator current-step={currentStep} type="base" variant="base">
+                <lightning-progress-step label="Search & Filter" value="1"></lightning-progress-step>
+                <lightning-progress-step label="Add Quantity" value="2"></lightning-progress-step>
+                <lightning-progress-step label="Quote Summary" value="3"></lightning-progress-step>
+            </lightning-progress-indicator>
+            <template if:true={isStep1}>
+                <div class="search-row slds-grid slds-grid_vertical-align-center">
+                    <lightning-input type="search" placeholder="Search products and press Enter…"
+                        label="Search Products" value={searchKey} onkeyup={handleSearchKeyUp}
+                        class="slds-col slds-m-bottom_medium"></lightning-input>
+                </div>
+
+                <template if:false={filteredProducts.length}>
+                    <div class="empty-state slds-m-top_large slds-align_absolute-center slds-text-align_center">
+                        <lightning-icon icon-name="utility:search" size="xx-small" class="slds-m-bottom_small"></lightning-icon>
+                        <!-- <div class="slds-text-heading_small slds-m-bottom_xx-small">Find products</div> -->
+                        <div class="slds-p-left_x-small slds-text-color_weak"><b> Find products</b> Type a keyword and press <span class="kbd">Enter</span> to search.</div>
+                    </div>
+                </template>
+
+                <template if:true={filteredProducts.length}>
+
+                    <template if:true={selectedProducts.length}>
+                        <div class="slds-m-bottom_small slds-text-title_caps slds-grid slds-grid_vertical-align-center">
+                            <span class="slds-text-color_weak slds-m-right_x-small">Selected</span>
+                            <span class="count-pill">{selectedProducts.length}</span>
+                        </div>
+                    </template>
+
+                    <ul class="product-list slds-m-top_medium">
+                        <template for:each={filteredProducts} for:item="product">
+                            <li key={product.Id} class={product.cssClass} data-id={product.Id}
+                                onclick={handleSelectProduct} role="button" tabindex="0"
+                                onkeydown={handleSelectProduct}>
+                                <div class="slds-media">
+                                    <div class="slds-media__figure slds-m-right_small">
+                                        <lightning-icon icon-name="utility:products" alternative-text="Product"
+                                            size="small"></lightning-icon>
+                                    </div>
+                                    <div class="slds-media__body">
+                                        <div class="slds-text-heading_small">{product.Name}</div>
+                                        <div class="slds-text-color_weak slds-m-top_xx-small">
+                                            <span class="price">${product.UnitPrice}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </template>
+                    </ul>
+                </template>
+
+                <template if:true={selectedProducts.length}>
+                    <div class="slds-m-top_large slds-align_absolute-center">
+                        <lightning-button variant="brand" label="Next" onclick={goToStep2}
+                            class="cta-next"></lightning-button>
+                    </div>
+                </template>
+            </template>
+            <template if:true={isStep2}>
+                <div class="slds-grid slds-wrap slds-gutters slds-m-top_small">
+                    <template for:each={selectedProducts} for:item="product" for:index="index">
+                        <div key={product.Id} class="slds-col slds-size_1-of-1 slds-medium-size_1-of-1 slds-m-vertical_xx-small">
+                            <div class="qty-card slds-box slds-p-around_medium">
+                                <div class="slds-text-title_bold slds-m-bottom_x-small">{product.Name} -
+                                    ${product.UnitPrice}</div>
+                                <lightning-input type="number" label="Quantity" min="0" data-index={index}
+                                    value={product.quantity} onchange={handleQuantityChange}></lightning-input>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+                <div class="footer-actions slds-m-top_large slds-grid slds-grid_align-spread">
+                    <lightning-button label="Back" onclick={goToStep1}></lightning-button>
+                    <lightning-button variant="brand" class="slds-m-left_small" label="Next"
+                        onclick={goToStep3}></lightning-button>
+                </div>
+            </template>
+            <template if:true={isStep3}>
+                <div class="slds-m-bottom_small slds-text-heading_small">Quote Summary</div>
+                <template if:true={lineItems.length}>
+                    <div class="table-scroll">
+                        <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Product</th>
+                                    <th scope="col" class="slds-text-align_right">Quantity</th>
+                                    <th scope="col" class="slds-text-align_right">Unit Price</th>
+                                    <th scope="col" class="slds-text-align_right">Total Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={lineItems} for:item="item">
+                                    <tr key={item.productId}>
+                                        <td>{item.productName}</td>
+                                        <td class="slds-text-align_right">{item.quantity}</td>
+                                        <td class="slds-text-align_right">${item.unitPrice}</td>
+                                        <td class="slds-text-align_right">${item.totalPrice}</td>
+                                    </tr>
+                                </template>
+                                <tr>
+                                    <td colspan="3" class="slds-text-align_right slds-text-title_bold">Total Amount</td>
+                                    <td class="slds-text-align_right slds-text-title_bold">${totalAmount}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="footer-actions slds-m-top_large slds-grid slds-grid_align-spread">
+                        <lightning-button label="Back" onclick={goToStep2}></lightning-button>
+                        <lightning-button variant="brand" label="Save Quote & Generate PDF"
+                            onclick={handleSaveQuote}></lightning-button>
+                    </div>
+                </template>
+
+                <template if:false={lineItems.length}>
+                    <div class="empty-state slds-m-top_large slds-align_absolute-center slds-text-align_center">
+                        <lightning-icon icon-name="utility:warning" size="small"
+                            class="slds-m-bottom_x-small"></lightning-icon>
+                        <div class="slds-text-color_weak">No items in the quote. Go back to add quantities.</div>
+                    </div>
+                </template>
+            </template>
+        </div>
+    </div>
+</template>
