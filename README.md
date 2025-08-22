@@ -33,25 +33,6 @@ A dynamic **Salesforce Lightning Web Component** for generating quotes with prod
 
 ---
 
-## Installation
-
-1. Clone this repository:
-
-```bash
-git clone https://github.com/<your-username>/quote-generator-lwc.git
-cd quote-generator-lwc
-```
-
-2. Deploy the component to your Salesforce org using **SFDX**:
-
-```bash
-sfdx force:source:deploy -p force-app/main/default/lwc/quoteGenerator
-```
-
-3. Add the component to a Lightning App Builder page or a Record Page.
-
----
-
 ## Usage
 
 1. **Step 1: Search & Filter Products**  
