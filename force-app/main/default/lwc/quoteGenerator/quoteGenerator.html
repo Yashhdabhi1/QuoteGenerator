@@ -6,6 +6,8 @@
                 <lightning-progress-step label="Add Quantity" value="2"></lightning-progress-step>
                 <lightning-progress-step label="Quote Summary" value="3"></lightning-progress-step>
             </lightning-progress-indicator>
+
+            <!-- STEP 1 -->
             <template if:true={isStep1}>
                 <div class="search-row slds-grid slds-grid_vertical-align-center">
                     <lightning-input type="search" placeholder="Search products and press Enter…"
@@ -16,13 +18,13 @@
                 <template if:false={filteredProducts.length}>
                     <div class="empty-state slds-m-top_large slds-align_absolute-center slds-text-align_center">
                         <lightning-icon icon-name="utility:search" size="xx-small" class="slds-m-bottom_small"></lightning-icon>
-                        <!-- <div class="slds-text-heading_small slds-m-bottom_xx-small">Find products</div> -->
-                        <div class="slds-p-left_x-small slds-text-color_weak"><b> Find products</b> Type a keyword and press <span class="kbd">Enter</span> to search.</div>
+                        <div class="slds-p-left_x-small slds-text-color_weak">
+                            <b>Find products</b> Type a keyword and press <span class="kbd">Enter</span> to search.
+                        </div>
                     </div>
                 </template>
 
                 <template if:true={filteredProducts.length}>
-
                     <template if:true={selectedProducts.length}>
                         <div class="slds-m-bottom_small slds-text-title_caps slds-grid slds-grid_vertical-align-center">
                             <span class="slds-text-color_weak slds-m-right_x-small">Selected</span>
@@ -59,10 +61,13 @@
                     </div>
                 </template>
             </template>
+
+            <!-- STEP 2 -->
             <template if:true={isStep2}>
                 <div class="slds-grid slds-wrap slds-gutters slds-m-top_small">
                     <template for:each={selectedProducts} for:item="product" for:index="index">
-                        <div key={product.Id} class="slds-col slds-size_1-of-1 slds-medium-size_1-of-1 slds-m-vertical_xx-small">
+                        <div key={product.Id}
+                            class="slds-col slds-size_1-of-1 slds-medium-size_1-of-1 slds-m-vertical_xx-small">
                             <div class="qty-card slds-box slds-p-around_medium">
                                 <div class="slds-text-title_bold slds-m-bottom_x-small">{product.Name} -
                                     ${product.UnitPrice}</div>
@@ -78,11 +83,14 @@
                         onclick={goToStep3}></lightning-button>
                 </div>
             </template>
+
+            <!-- STEP 3 -->
             <template if:true={isStep3}>
                 <div class="slds-m-bottom_small slds-text-heading_small">Quote Summary</div>
                 <template if:true={lineItems.length}>
                     <div class="table-scroll">
-                        <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered">
+                        <table
+                            class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered">
                             <thead>
                                 <tr>
                                     <th scope="col">Product</th>
@@ -101,7 +109,8 @@
                                     </tr>
                                 </template>
                                 <tr>
-                                    <td colspan="3" class="slds-text-align_right slds-text-title_bold">Total Amount</td>
+                                    <td colspan="3" class="slds-text-align_right slds-text-title_bold">
+                                        Total Amount</td>
                                     <td class="slds-text-align_right slds-text-title_bold">${totalAmount}</td>
                                 </tr>
                             </tbody>
