@@ -2,9 +2,12 @@ import { LightningElement, track } from 'lwc';
 import { loadScript } from 'lightning/platformResourceLoader';
 import JSPDF from '@salesforce/resourceUrl/JSPDF';
 import JSPDF_AUTOTABLE from '@salesforce/resourceUrl/JSPDF_AUTOTABLE';
-import getProducts from '@salesforce/apex/QuoteController.getProducts';
-import createQuote from '@salesforce/apex/QuoteController.createQuote';
-import saveQuoteFile from '@salesforce/apex/QuoteController.saveQuoteFile';
+import CONFETTI from '@salesforce/resourceUrl/canvasConfetti';
+
+import getProducts from '@salesforce/apex/QuoteGenerateController.getProducts';
+import createQuote from '@salesforce/apex/QuoteGenerateController.createQuote';
+import savePdf from '@salesforce/apex/QuotePdfController.savePdf';
+
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 export default class QuoteGenerator extends LightningElement {
@@ -13,41 +16,33 @@ export default class QuoteGenerator extends LightningElement {
     @track lineItems = [];
     @track totalAmount = 0;
     @track searchKey = '';
-    jsPDFInitialized = false;
+    @track quoteId;
+    @track quoteName;
 
+    jsPDFInitialized = false;
     currentStep = "1";
 
     get isStep1() { return this.currentStep === "1"; }
     get isStep2() { return this.currentStep === "2"; }
     get isStep3() { return this.currentStep === "3"; }
 
-    // Load jsPDF and jspdf-autotable when the component is connected
     connectedCallback() {
         if (!this.jsPDFInitialized) {
             Promise.all([
                 loadScript(this, JSPDF),
-                loadScript(this, JSPDF_AUTOTABLE)
+                loadScript(this, JSPDF_AUTOTABLE),
+                loadScript(this, CONFETTI)
             ])
                 .then(() => {
                     this.jsPDFInitialized = true;
-
-                    // Register autoTable with jsPDF
-                    const { jsPDF } = window.jspdf;
                     window.jsPDF = window.jspdf.jsPDF;
-                    // Ensure global
-                    window.jspdfAutoTable = window.jspdfAutoTable || window.jspdf?.autoTable;
-
-                    // Attach if not already available
-                    if (window.jspdfAutoTable) {
-                        jsPDF.API.autoTable = window.jspdfAutoTable;
-                    }
                 })
                 .catch(error => {
                     this.showToast('Error', 'Failed to load PDF libraries', 'error');
+                    console.error(error);
                 });
         }
     }
-
 
     async handleSearchKeyUp(event) {
         if (event.keyCode === 13) {
@@ -126,50 +121,56 @@ export default class QuoteGenerator extends LightningElement {
     async handleSaveQuote() {
         try {
             const formattedLineItems = this.lineItems.map(item => ({
-                productId: item.productId,
+                productId:   item.productId,
                 productName: item.productName,
-                quantity: item.quantity,
-                unitPrice: item.unitPrice
+                quantity:    item.quantity,
+                unitPrice:   item.unitPrice
             }));
-            const quoteId = await createQuote({ lineItems: formattedLineItems });
-            this.showToast('Success', `Quote created with ID: ${quoteId}`, 'success');
 
-            // Generate PDF
-            this.handleGeneratePDF();
+            const quoteRecord = await createQuote({ lineItems: formattedLineItems });
+            this.quoteId   = quoteRecord.Id;
+            this.quoteName = quoteRecord.Name || `Quote_${this.quoteId}`;
 
-            // Reset wizard
-            this.filteredProducts = [];
-            this.selectedProducts = [];
-            this.lineItems = [];
-            this.totalAmount = 0;
-            this.searchKey = '';
-            this.currentStep = "1";
+            this.showToast('Success', `Quote created: ${this.quoteName}`, 'success');
+
+            const pdfBase64 = await this.generatePdfBase64();
+            const fileName  = this.generateFileName();
+
+            // Save PDF → appears in Files related list
+            await savePdf({
+                quoteId:   this.quoteId,
+                pdfBase64: pdfBase64,
+                fileName:  fileName
+            });
+
+            // Immediate download for user
+            this.triggerLocalDownload(pdfBase64, fileName);
+
+            // Confetti + reset
+            this.fireConfetti();
+            this.resetWizard();
+
         } catch (error) {
-            this.showToast('Error', error.body?.message || error.message, 'error');
+            const msg = error.body?.message || error.message || 'Unknown error';
+            this.showToast('Error', msg, 'error');
+            console.error(error);
         }
     }
 
-        handleGeneratePDF() {
-        if (!this.jsPDFInitialized) {
-            this.showToast('Error', 'PDF libraries not loaded', 'error');
-            return;
-        }
+    async generatePdfBase64() {
+        if (!this.jsPDFInitialized) throw new Error('PDF library not loaded');
 
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
+        const doc = new window.jsPDF();
 
-        // 🔹 Title
         doc.setFontSize(18);
-        doc.setFont("helvetica", "bold");
-        doc.text('Quote Summary', 105, 15, { align: "center" });
+        doc.setFont('helvetica', 'bold');
+        doc.text('Quote Summary', 105, 15, { align: 'center' });
 
-        // 🔹 Meta Info
         doc.setFontSize(11);
-        doc.setFont("helvetica", "normal");
+        doc.setFont('helvetica', 'normal');
         doc.text(`Date: ${new Date().toLocaleDateString()}`, 20, 25);
-        doc.text(`Prepared By: Salesforce Quote Generator`, 20, 32);
+        doc.text('Prepared By: Salesforce Quote Generator', 20, 32);
 
-        // 🔹 Table
         const headers = [['Product', 'Quantity', 'Unit Price', 'Total Price']];
         const body = this.lineItems.map(item => [
             item.productName,
@@ -178,7 +179,6 @@ export default class QuoteGenerator extends LightningElement {
             `$${item.totalPrice.toFixed(2)}`
         ]);
 
-        // Add grand total row
         body.push([
             { content: 'Grand Total', colSpan: 3, styles: { halign: 'right', fontStyle: 'bold' } },
             { content: `$${this.totalAmount.toFixed(2)}`, styles: { fontStyle: 'bold' } }
@@ -190,27 +190,56 @@ export default class QuoteGenerator extends LightningElement {
             startY: 40,
             theme: 'grid',
             styles: { fontSize: 10, cellPadding: 4 },
-            headStyles: { fillColor: [41, 128, 185], textColor: 255, fontStyle: 'bold' }, // Blue header
-            alternateRowStyles: { fillColor: [245, 245, 245] }, // Light grey rows
+            headStyles: { fillColor: [41, 128, 185], textColor: 255, fontStyle: 'bold' },
+            alternateRowStyles: { fillColor: [245, 245, 245] },
             columnStyles: {
-                0: { cellWidth: 70 }, // Product
-                1: { cellWidth: 30, halign: 'center' }, // Qty
-                2: { cellWidth: 40, halign: 'right' }, // Unit Price
-                3: { cellWidth: 40, halign: 'right' }  // Total Price
+                0: { cellWidth: 70 },
+                1: { cellWidth: 30, halign: 'center' },
+                2: { cellWidth: 40, halign: 'right' },
+                3: { cellWidth: 40, halign: 'right' }
             },
             margin: { left: 20, right: 20 }
         });
 
-        // 🔹 Footer
         const finalY = doc.lastAutoTable.finalY || 60;
         doc.setFontSize(9);
         doc.setTextColor(100);
-        doc.text('Thank you for your business!', 105, finalY + 15, { align: "center" });
+        doc.text('Thank you for your business!', 105, finalY + 15, { align: 'center' });
 
-        // 🔹 Save
-        doc.save(`Quote_${new Date().toISOString().split('T')[0]}.pdf`);
+        return doc.output('datauristring').split(',')[1];
     }
 
+    triggerLocalDownload(base64, fileName) {
+        const link = document.createElement('a');
+        link.href = 'data:application/pdf;base64,' + base64;
+        link.download = fileName;
+        link.click();
+    }
+
+    generateFileName() {
+        const firstProduct = this.lineItems.length > 0
+            ? this.lineItems[0].productName.replace(/\s+/g, '_')
+            : 'NoProduct';
+        const qName = this.quoteName ? this.quoteName.replace(/\s+/g, '_') : this.quoteId;
+        return `Quote_${firstProduct}_${qName}.pdf`;
+    }
+
+    fireConfetti() {
+        if (window.confetti) {
+            window.confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 } });
+        }
+    }
+
+    resetWizard() {
+        this.filteredProducts = [];
+        this.selectedProducts = [];
+        this.lineItems = [];
+        this.totalAmount = 0;
+        this.searchKey = '';
+        this.currentStep = "1";
+        this.quoteId = null;
+        this.quoteName = null;
+    }
 
     showToast(title, message, variant) {
         this.dispatchEvent(new ShowToastEvent({ title, message, variant }));
