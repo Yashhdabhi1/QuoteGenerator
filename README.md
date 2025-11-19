@@ -67,14 +67,20 @@ force-app/
 └── main/
     └── default/
         └── classes/
-                ├── QuoteController.cls
-                └── QuoteController.cls-meta.xml 
+                ├── QuoteGenerateController.cls
+                ├── QuoteGenerateController.cls-meta.xml
+                ├── QuoteGenerateControllerTest.cls
+                ├── QuoteGenerateControllerTest.cls-meta.xml
+                ├── QuotePdfController.cls
+                └── QuotePdfController.cls-meta.xml 
         └── lwc/
             └── quoteGenerator/
                 ├── quoteGenerator.html
                 ├── quoteGenerator.js
                 └── quoteGenerator.css
         └── staticresources/
+                ├── canvasConfetti
+                ├── canvasConfetti.resource-meta.xml
                 ├── JSPDF.js
                 ├── JSPDF.resource-meta.xml
                 ├── JSPDF_AUTOTABLE.js
